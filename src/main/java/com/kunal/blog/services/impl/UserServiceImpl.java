@@ -16,72 +16,84 @@ import com.kunal.blog.services.UserService;
 @Service
 public class UserServiceImpl implements UserService{
 
-	@Autowired
-	private UserRepo userRepo;
+    @Autowired
+    private UserRepo userRepo;
 
-	@Autowired
-	private ModelMapper modelMapper;
+    @Autowired
+    private ModelMapper modelMapper;
 
-	@Override
-	public UserDto createUser(UserDto userDto) {
-		User user = this.dtoToUser(userDto);
-		User savedUser = this.userRepo.save(user);
-		return this.userToDto(savedUser);
-	}
+    // Method to create a new user
+    @Override
+    public UserDto createUser(UserDto userDto) {
+        User user = this.dtoToUser(userDto);
+        User savedUser = this.userRepo.save(user);
+        return this.userToDto(savedUser);
+    }
 
-	@Override
-	public UserDto updateUser(UserDto userDto, Integer userId) {
+    // Method to update an existing user
+    @Override
+    public UserDto updateUser(UserDto userDto, Integer userId) {
 
-		User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        // Retrieve the user from the database, or throw a ResourceNotFoundException if not found
+        User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
-		user.setName(userDto.getName());
-		user.setEmail(userDto.getEmail());
-		user.setPassword(userDto.getPassword());
-		user.setAbout(userDto.getAbout());
+        // Update user details
+        user.setName(userDto.getName());
+        user.setEmail(userDto.getEmail());
+        user.setPassword(userDto.getPassword());
+        user.setAbout(userDto.getAbout());
 
-		User updatedUser = this.userRepo.save(user);
+        // Save the updated user
+        User updatedUser = this.userRepo.save(user);
 
-		return this.userToDto(updatedUser);
-	}
+        return this.userToDto(updatedUser);
+    }
 
-	@Override
-	public UserDto getUserById(Integer userId) {
+    // Method to get user by ID
+    @Override
+    public UserDto getUserById(Integer userId) {
 
-		User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", " Id ", userId));
+        // Retrieve the user from the database by ID, or throw a ResourceNotFoundException if not found
+        User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", " Id ", userId));
 
-		return this.userToDto(user);
-	}
+        return this.userToDto(user);
+    }
 
-	@Override
-	public List<UserDto> getAllUsers() {
+    // Method to get all users
+    @Override
+    public List<UserDto> getAllUsers() {
 
-		List<User> users = this.userRepo.findAll();
+        // Retrieve all users from the database
+        List<User> users = this.userRepo.findAll();
 
-		List<UserDto> userDtos = users.stream().map(user -> this.userToDto(user)).collect(Collectors.toList());
+        // Convert User objects to UserDto objects
+        List<UserDto> userDtos = users.stream().map(user -> this.userToDto(user)).collect(Collectors.toList());
 
-		return userDtos;
-	}
+        return userDtos;
+    }
 
-	@Override
-	public void deleteUser(Integer userId) {
+    // Method to delete a user by ID
+    @Override
+    public void deleteUser(Integer userId) {
 
-		User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", " Id ", userId));
-		this.userRepo.delete(user);
+        // Retrieve the user from the database by ID, or throw a ResourceNotFoundException if not found
+        User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", " Id ", userId));
+        
+        // Delete the user from the database
+        this.userRepo.delete(user);
 
-	}
+    }
 
-	// Method to convert UserDto object to User object
-	private User dtoToUser(UserDto userDto) {
-		User user = this.modelMapper.map(userDto, User.class);
-		return user;
-	}
+    // Method to convert UserDto object to User object
+    private User dtoToUser(UserDto userDto) {
+        User user = this.modelMapper.map(userDto, User.class);
+        return user;
+    }
 
-	// Method to convert User object to UserDto object
-	private UserDto userToDto(User user) {
-		UserDto userDto = this.modelMapper.map(user, UserDto.class);
-		return userDto;
-	}
-
-
+    // Method to convert User object to UserDto object
+    private UserDto userToDto(User user) {
+        UserDto userDto = this.modelMapper.map(user, UserDto.class);
+        return userDto;
+    }
 
 }
