@@ -22,6 +22,7 @@ public class CategoryServiceImpl implements CategoryService {
 	@Autowired
 	private ModelMapper modelMapper;
 
+	// Method to create a new category
 	@Override
 	public CategoryDto createCategory(CategoryDto categoryDto) {
 		Category category = this.modelMapper.map(categoryDto, Category.class);
@@ -29,50 +30,59 @@ public class CategoryServiceImpl implements CategoryService {
 		return this.modelMapper.map(savedCategory, CategoryDto.class);
 	}
 
+	// Method to update an existing category
 	@Override
 	public CategoryDto updateCategory(CategoryDto categoryDto, Integer categoryId) {
+		// Find the category by its id or throw an exception if not found
 		Category category = this.categoryRepo.findById(categoryId)
 				.orElseThrow(() -> new ResourceNotFoundException("Category", "Category Id", categoryId));
 
+		// Update the category details
 		category.setCategoryTitle(categoryDto.getCategoryTitle());
 		category.setCategoryDescription(categoryDto.getCategoryDescription());
 
+		// Save the updated category
 		Category updatedCategory = this.categoryRepo.save(category);
 
 		return this.modelMapper.map(updatedCategory, CategoryDto.class);
 	}
 
+	// Method to delete a category
 	@Override
 	public void deleteCategory(Integer categoryId) {
-
-		Category category = this.categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "Category Id", categoryId));
+		// Find the category by its id or throw an exception if not found
+		Category category = this.categoryRepo.findById(categoryId)
+				.orElseThrow(() -> new ResourceNotFoundException("Category", "Category Id", categoryId));
+		// Delete the category
 		this.categoryRepo.delete(category);
 	}
 
+	// Method to get a category by its id
 	@Override
 	public CategoryDto getCategory(Integer categoryId) {
-
-		Category category = this.categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "Category Id", categoryId));
+		// Find the category by its id or throw an exception if not found
+		Category category = this.categoryRepo.findById(categoryId)
+				.orElseThrow(() -> new ResourceNotFoundException("Category", "Category Id", categoryId));
 
 		return this.modelMapper.map(category, CategoryDto.class);
 	}
 
+	// Method to get all categories
 	@Override
 	public List<CategoryDto> getAllCategory() {
-
+		// Retrieve all categories from the repository
 		List<Category> categoryList = this.categoryRepo.findAll();
 
+		// Convert the list of categories to a list of category DTOs
 		List<CategoryDto> categoryDtoList = new ArrayList<>();
-		for(Category cat : categoryList) {
+		for (Category cat : categoryList) {
 			categoryDtoList.add(this.modelMapper.map(cat, CategoryDto.class));
 		}
-		
-//		// TODO : Instead of using above for-loop logic to convert categoryList to categoryListDto. We can use below 1 liner code.
-//		List<CategoryDto> categoryListDto = categoryList.stream().map((cat) -> this.modelMapper.map(cat, CategoryDto.class)).collect(Collectors.toList());
+
+		// Alternatively, use a one-liner with streams
+		// List<CategoryDto> categoryListDto = categoryList.stream().map((cat) -> this.modelMapper.map(cat, CategoryDto.class)).collect(Collectors.toList());
 
 		return categoryDtoList;
 	}
-
-
 
 }
