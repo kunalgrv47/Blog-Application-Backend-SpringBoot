@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kunal.blog.payloads.ApiResponse;
 import com.kunal.blog.payloads.PostDto;
+import com.kunal.blog.payloads.PostResponse;
 import com.kunal.blog.services.PostService;
 
 @RestController
@@ -41,7 +43,7 @@ public class PostController {
 
 		PostDto updatedPostDto = this.postService.updatePost(postDto, postId);
 
-		return new ResponseEntity<PostDto>(updatedPostDto, HttpStatus.OK);
+		return new ResponseEntity<>(updatedPostDto, HttpStatus.OK);
 	}
 	
 	
@@ -66,10 +68,13 @@ public class PostController {
 
 	// GET POSTS BY USER
 	@GetMapping("/user/{userId}/posts")
-	public ResponseEntity<List<PostDto>> getPostByUser(@PathVariable Integer userId){
+	public ResponseEntity<PostResponse> getPostByUser(
+			@PathVariable Integer userId,
+			@RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
+			@RequestParam(value = "pageSize", defaultValue = "1", required = false) Integer pageSize){
 
-		List<PostDto> postDtos = this.postService.getPostByUser(userId);	
-		return new ResponseEntity<>(postDtos, HttpStatus.OK);
+		PostResponse postResponse= this.postService.getPostByUser(userId, pageNumber, pageSize);	
+		return new ResponseEntity<>(postResponse, HttpStatus.OK);
 	}
 
 
@@ -85,15 +90,17 @@ public class PostController {
 	
 	// GET ALL POSTS
 	@GetMapping("/posts")
-	public ResponseEntity<List<PostDto>> getAllPost(){
+	public ResponseEntity<PostResponse> getAllPost(
+			@RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
+			@RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
+			@RequestParam(value = "sortBy", defaultValue = "postId", required = false) String sortBy,
+			@RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir
+			){
 
-		List<PostDto> allPost = this.postService.getAllPost();
+		PostResponse postResponse = this.postService.getAllPost(pageNumber, pageSize, sortBy, sortDir);
 
-		return new ResponseEntity<>(allPost, HttpStatus.OK);	
+		return new ResponseEntity<>(postResponse, HttpStatus.OK);	
 
 	}
-
-
-
 
 }
